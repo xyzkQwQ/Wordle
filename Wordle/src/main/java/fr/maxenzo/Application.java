@@ -1,5 +1,7 @@
 package fr.maxenzo;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.Vector;
@@ -10,9 +12,7 @@ public class Application {
     public static final String WHITE = "\u001B[37m";
     public static final String GREEN = "\u001B[32m";
     public static final String RED = "\u001B[31m";
-    /*char[] useLetter = {
-        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'
-    };*/
+
     static Vector<String> useLetterVec = new Vector<>();
     static int[] bestLetterColors = new int[26]; // 0=rouge, 1=vert, 2=jaune
 
@@ -54,51 +54,37 @@ public class Application {
         return word.toUpperCase();
     }
 
+    @SuppressWarnings("CallToPrintStackTrace")
     public static String randomWord(int choice) {
         Random random = new Random();
-        String[] mots5 = {
-            "CRAIE", "TABLE", "FRUIT", "LIVRE", "SPORT", "GLACE", "PIANO", "FLEUR", "ROUGE", "BLEUE",
-            "CHAPE", "DOUTE", "ETAGE", "FABLE", "GIVRE", "HAVRE", "IGLOO", "JOUTE", "KAYAK", "LAMPE",
-            "MOULE", "NAPPE", "OLIVE", "PERLE", "DIGNE", "COUPE", "SUCRE", "TIGRE", "USINE", "VALSE",
-            "WAGON", "ZEBRE", "YACHT", "ABIME", "BAGUE", "CADRE", "DONNE", "EPICE", "FOYER", "GAZON",
-            "HACHE", "IMAGE", "OUEST", "LILAS", "NOYER", "OASIS", "POMME", "DEVIS", "RADIS", "ZUMBA",
-            "SABLE", "TAPIS", "UNITE", "VAGUE", "ZESTE", "ALGUE", "BILLE", "ECLAT", "RESTE", "VESTE",
-            "SOEUR", "FRERE", "SAINT", "ROCHE", "REBUS", "PRUNE", "POIRE", "MEULE", "MOLLE", "HYDRE",
-            "ACIDE", "BANAL", "BOITE", "OMBRE", "NOYAU", "POIDS", "MOTIF", "GRAAL", "GALOP", "FUMEE"};
 
-        String[] mots6 = {
-            "MAISON", "SOLEIL", "POULET", "RIVAGE", "PLANTE", "ANANAS", "BATEAU", "CARTON", "DOUCHE",
-            "FLEURS", "GATEAU", "NUAGES", "POISON", "TOMATE", "ARBRES", "BISOUX", "CLOCHE", "ECOLES",
-            "ZYTHUM", "DEVOIR", "ECRIRE", "LIVRES", "MANGER", "SOURIS", "ACCUSE", "BESOIN", "DANGER",
-            "CADEAU", "CIMENT", "DEGOUT", "EFFORT", "ENFANT", "FAIBLE", "GENTIL", "AVOINE", "BALCON",
-            "BAVARD", "BLEUET", "CHAISE", "CLOUER", "COFFRE", "DIRIGE", "ECRANS", "FICHER", "GLACER",
-            "GRIMPE", "JOUETS", "LISSER", "MOULIN", "OUVRIR", "ACTION", "AMICAL", "ANIMAL", "BANQUE",
-            "BAVURE", "BEAUTE", "BOUCLE", "BOUTON", "BOUTON", "CADRER", "CALMER", "CERCLE", "DOUTER",
-            "DOIGTS", "ECLAIR", "EFFACE", "ENCORE", "ENJEUX", "ENTRER", "ERREUR", "ESPACE", "EQUIPE",};
+        Vector<String> vecList = new Vector<>();
+        String path;
 
-        String[] mots7 = {
-            "ABEILLE", "ABRICOT", "AFFABLE", "AGNEAUX", "ALIMENT", "AMICALE", "ARDOISE", "ASTRAUX",
-            "BAGUETS", "BANANES", "BATEAUX", "BELOTER", "BILLETS", "BISCUIT", "BOULEAU", "BRIGADE",
-            "CABANON", "CADEAUX", "CARTONS", "CASQUET", "CERISES", "CHAISES", "CHATEAU", "COIFFES",
-            "COLLINE", "COULEUR", "CROQUET", "CRAYONS", "CUISINE", "DENTIER", "DESSINS", "HAMSTER",
-            "FENETRE", "FLEURIR", "FOURRER", "GOBELIN", "FRUITER", "GALERIE", "HORIZON", "IMPRIME",
-            "JARDINS", "LAMPEAU", "PALETTE", "QUINTAL", "RIVAGES", "SAVOIRS", "TABLEAU", "UNIVERS",
-            "VOYAGES", "HAINEUX", "DENTIER", "LUDOVIC", "ENDIVES", "JAGUARS", "SARDINE", "OURAGAN",};
-
-        return switch (choice) {
+        switch (choice) {
             case 5 -> {
-                int randomNumber = random.nextInt(mots5.length);
-                yield mots5[randomNumber];
+                path = "Wordle\\src\\main\\java\\fr\\maxenzo\\words\\5_letters.txt";
             }
             case 6 -> {
-                int randomNumber = random.nextInt(mots6.length);
-                yield mots6[randomNumber];
+                path = "Wordle\\src\\main\\java\\fr\\maxenzo\\words\\6_letters.txt";
             }
             default -> {
-                int randomNumber = random.nextInt(mots7.length);
-                yield mots7[randomNumber];
+                path = "Wordle\\src\\main\\java\\fr\\maxenzo\\words\\7_letters.txt";
             }
-        };
+        }
+
+        File file = new File(path);
+        try (Scanner scan = new Scanner(file)) {
+            while (scan.hasNextLine()) {
+                String word = scan.nextLine();
+                vecList.add(word);
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+
+        return vecList.get(random.nextInt(vecList.size()));
     }
 
     public static boolean checkWord(String randomWord, String wordChoose, int lives) {
